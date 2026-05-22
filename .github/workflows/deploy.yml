@@ -36,6 +36,8 @@ jobs:
           FLET_CLI_NO_RICH_OUTPUT: "true"
         run: |
           yes | flet build web --base-url /${{ github.event.repository.name }}/ > build_log.txt 2>&1 || cat build_log.txt
+          # Create 404 fallback to fix routing issues
+          cp build/web/index.html build/web/404.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
