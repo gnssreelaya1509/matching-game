@@ -23,8 +23,9 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install flet; fi
 
       - name: Build web app
-        # The magic line that works for ANY repo name
-        run: flet build web --base-url /${{ github.event.repository.name }}/
+        # Added --yes to automatically confirm Flutter SDK installation
+        # Added --no-prompt to ensure no manual input is needed
+        run: flet build web --base-url /${{ github.event.repository.name }}/ --no-prompt --yes
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
