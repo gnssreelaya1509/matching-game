@@ -8,6 +8,9 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
+    # IMPORTANT: Ensure the route is explicit
+    page.route = "/"
+
     # State variables
     selected_cards = []
     engine = MemoryEngine()
@@ -20,7 +23,15 @@ def main(page: ft.Page):
     # UI Components
     heading = ft.Text("Memory Match Game", size=30, weight="bold")
     score_row = ft.Row(controls=[], alignment=ft.MainAxisAlignment.CENTER)
-    grid = ft.GridView(expand=False, runs_count=4, max_extent=100, spacing=10, run_spacing=10, width=440, height=440)
+    grid = ft.GridView(
+        expand=False,
+        runs_count=4,
+        max_extent=100,
+        spacing=10,
+        run_spacing=10,
+        width=440,
+        height=440
+    )
 
     async def on_card_click(e):
         card = e.control
@@ -38,7 +49,6 @@ def main(page: ft.Page):
             if engine.check_match(c1.data, c2.data):
                 c1.bgcolor = ft.Colors.GREEN_200
                 c2.bgcolor = ft.Colors.GREEN_200
-                # Add Ice Cream Score
                 score_row.controls.append(ft.Icon(ft.Icons.ICECREAM, color=ft.Colors.PURPLE))
                 score_row.update()
             else:
@@ -89,4 +99,5 @@ def main(page: ft.Page):
     build_grid("NUMBERS")
 
 
-ft.app(target=main)
+# Pass assets_dir="assets" explicitly to ensure web builds find them
+ft.app(target=main, assets_dir="assets")
