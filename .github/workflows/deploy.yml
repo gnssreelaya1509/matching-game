@@ -5,7 +5,9 @@ on:
     branches: [ "main" ]
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -29,17 +31,17 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install flet; fi
 
-      - name: Run Flet Doctor
-        run: flet doctor
-
       - name: Build web app
         env:
           FLET_CLI_NO_RICH_OUTPUT: "true"
         run: |
           yes | flet build web --base-url /${{ github.event.repository.name }}/ > build_log.txt 2>&1 || cat build_log.txt
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
+          path: 'build/web'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
