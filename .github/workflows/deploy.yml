@@ -24,19 +24,25 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libx11-dev
+          # Added mesa-utils to resolve the eglinfo rendering error
+          sudo apt-get install -y libgtk-3-dev libx11-dev mesa-utils
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install flet; fi
 
+      - name: Run Flet Doctor
+        run: flet doctor
+
       - name: Build web app
         env:
           FLET_CLI_NO_RICH_OUTPUT: "true"
         run: |
+          # 'yes |' handles automatic confirmation prompts
+          # Log redirection prevents "Broken pipe" errors
           yes | flet build web --base-url /${{ github.event.repository.name }}/ > build_log.txt 2>&1 || cat build_log.txt
-          # Create 404 fallback to fix routing issues
+          # Create 404 fallback to fix routing issues in Single Page Applications
           cp build/web/index.html build/web/404.html
 
       - name: Upload Pages artifact
