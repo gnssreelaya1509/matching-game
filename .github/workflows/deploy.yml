@@ -26,11 +26,14 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install flet; fi
 
+      - name: Run Flet Doctor
+        run: flet doctor
+
       - name: Build web app
         env:
           FLET_CLI_NO_RICH_OUTPUT: "true"
-        # The 'yes |' command automatically types 'y' for every confirmation prompt
-        run: yes | flet build web --base-url /${{ github.event.repository.name }}/
+        run: |
+          yes | flet build web --base-url /${{ github.event.repository.name }}/ > build_log.txt 2>&1 || cat build_log.txt
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
