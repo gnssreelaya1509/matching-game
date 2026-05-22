@@ -29,8 +29,8 @@ jobs:
       - name: Build web app
         env:
           FLET_CLI_NO_RICH_OUTPUT: "true"
-        # --no-prompt and --yes ensure the build process does not wait for user input
-        run: flet build web --base-url /${{ github.event.repository.name }}/ --no-prompt --yes
+        # The 'yes |' command automatically types 'y' for every confirmation prompt
+        run: yes | flet build web --base-url /${{ github.event.repository.name }}/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
