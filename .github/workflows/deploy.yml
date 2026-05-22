@@ -1,58 +1,25 @@
-name: Build & Deploy Flet App
+name: Deploy Memory Game
 
-    on:
-      push:
-        branches: [ main, master ]
-      workflow_dispatch:
+on:
+  push:
+    branches: [ main ]
 
-    # --- THE FIX: Force GitHub to use the new Node 24 engine ---
+jobs:
+  build:
+    runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    concurrency:
-      group: "pages"
-      cancel-in-progress: true
-
-    jobs:
-      build:
-        name: Compile Web App
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout Code
-            uses: actions/checkout@v4
-
-          - name: Setup Python
-            uses: actions/setup-python@v5
-            with:
-              python-version: "3.12" 
-
-          - name: Install Dependencies
-            run: |
-              python -m pip install --upgrade pip
-              pip install -r requirements.txt
-
-          - name: Compile Flet to Web
-            run: flet build web --yes --base-url /matching-game/
-
-          - name: Package Web Files (Artifact)
-            uses: actions/upload-pages-artifact@v3
-            with:
-              path: build/web
-
-      deploy:
-        name: Deploy to GitHub Pages
-        needs: build
-        runs-on: ubuntu-latest
-        environment:
-          name: github-pages
-          url: ${{ steps.deployment.outputs.page_url }}
-        steps:
-          - name: Push to Live Server
-            id: deployment
-            uses: actions/deploy-pages@v4
-    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          pip install --upgrade pip
+          pip install flet
+      - run: flet build web --base-url /minesweeper/ --no-prompt
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/web
+          publish_branch: gh-pages
