@@ -16,15 +16,20 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libx11-dev
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Automatically detects if you have a requirements file or just needs flet
           if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install flet; fi
 
       - name: Build web app
-        # Added --yes to automatically confirm Flutter SDK installation
-        # Added --no-prompt to ensure no manual input is needed
+        env:
+          FLET_CLI_NO_RICH_OUTPUT: "true"
+        # --no-prompt and --yes ensure the build process does not wait for user input
         run: flet build web --base-url /${{ github.event.repository.name }}/ --no-prompt --yes
 
       - name: Deploy to GitHub Pages
